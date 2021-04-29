@@ -20,9 +20,12 @@ class InGame extends AppWindow {
 
   private player_name = null;
 
+  private streak_kills = 0;
+  private streak_max_time = null;
+
   private constructor() {
     super(windowNames.inGame);
-
+    
     this._eventsLog = document.getElementById('eventsLog');
     // this._infoLog = document.getElementById('infoLog');
 
@@ -54,11 +57,12 @@ class InGame extends AppWindow {
 
   // Special events will be highlighted in the event log
   private onNewEvents(e) {
-
+    
     var event = e.events[0]
 
     function log_event(){
-      console.log(event.name+" --> "+ event.data);
+      // console.log(event.name+" --> "+ event.data);
+      return 0
     }
 
     switch(event.name){
@@ -73,29 +77,49 @@ class InGame extends AppWindow {
           this.last_killer = false;
         }else{
           log_event();
-          this.causeEvent(event, "suicide");
+          this.playSound("suicide");
         }
         break;
 
       case 'knockedout':
         log_event();
         if(event.data == this.player_name){
-          this.causeEvent(event, "suicide");
+          this.playSound("suicide");
         }
         break;
-
+      case 'matchEnd':
+        this.streak_kills = 0;
+        break;
       case 'killed':
       case 'knockout':
-      case 'kill':
-        this.causeEvent(event, "kill");
+      // case 'kill':
+        if (this.streak_kills > 0){
+          var new_date = new Date();
+          if (new_date <= this.streak_max_time){
+            this.streak_kills ++;
+            this.create_date();
+            this.displayAnimation("killstreak");
+          }else{
+            this.streak_kills = 1;
+            this.create_date();
+          }
+        }else{
+          this.streak_kills ++;
+          this.create_date();
+        }
+
+        console.log(this.streak_kills);
+        // this.playSound("kill");
         break;
 
     }
-    // log_event()
+    if(event.name != "hit"){
+      console.log(event)
+    }
   }
 
 
-  private causeEvent(data, type) {
+  private playSound(type) {
     // var log = this._eventsLog
 
     // const line = document.createElement('pre');
@@ -113,34 +137,16 @@ class InGame extends AppWindow {
         break;
     }
 
-    // log.appendChild(line);
-    
-    // clear_delay(10);
-
-    // function clear_delay(seconds){
-    //   function delay(ms: number) {
-    //     return new Promise( resolve => setTimeout(resolve, ms) );
-    //   }
-    //   (async () => { 
-    //     // console.log('before delay')lllet me die.wav
-
-    //     await delay(seconds*1000);
-
-    //     // console.log('after delay');
-    //     log.innerHTML="";
-    //   })();
-    // }
-
   }
 
-  // public parse_event(e){
-  //   var event = e.events[0];
-  //   return event;
-  // }
+  private displayAnimation(type){
+    console.log("KILLSTREAK"+this.streak_kills);
+  }
 
-
-
-
+  private create_date(){
+    this.streak_max_time = new Date();
+    this.streak_max_time = this.streak_max_time.getTime()+(1 * 60000);
+  }
 
 
   public static instance() {
@@ -175,3 +181,21 @@ class InGame extends AppWindow {
 }
 
 InGame.instance().run();
+
+    // log.appendChild(line);
+    
+    // clear_delay(10);
+
+    // function clear_delay(seconds){
+    //   function delay(ms: number) {
+    //     return new Promise( resolve => setTimeout(resolve, ms) );
+    //   }
+    //   (async () => { 
+    //     // console.log('before delay')lllet me die.wav
+
+    //     await delay(seconds*1000);
+
+    //     // console.log('after delay');
+    //     log.innerHTML="";
+    //   })();
+    // }
