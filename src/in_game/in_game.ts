@@ -10,11 +10,14 @@ import WindowState = overwolf.windows.WindowStateEx;
 class InGame extends AppWindow {
   private static _instance: InGame;
   private _fortniteGameEventsListener: OWGamesEvents;
-  private _eventsLog: HTMLElement;
-  // private _infoLog: HTMLElement;
+  private _eventsPlace: HTMLElement;
+
+  private animation_1: HTMLElement;
+  private animation_2: HTMLElement;
 
   private fall_audio = new Audio();
-  private kill_audio = new Audio();
+  private start_audio = new Audio();
+  private streak_audio_3 = new Audio();
 
   private last_killer = false;
 
@@ -26,19 +29,24 @@ class InGame extends AppWindow {
   private constructor() {
     super(windowNames.inGame);
     
-    this._eventsLog = document.getElementById('eventsLog');
-    // this._infoLog = document.getElementById('infoLog');
+    this._eventsPlace = document.getElementById('eventsPlace');
+
+    this.animation_1 = document.getElementById('animation1');
+    this.animation_2 = document.getElementById('animation2');
 
     this.fall_audio.src = "../../audio/lllet me die.wav";
     this.fall_audio.load();
     this.fall_audio.volume = 1;
 
-    this.kill_audio.src = "../../audio/sword.mp3";
-    this.kill_audio.load();
-    this.kill_audio.volume = 0.8;
+    this.start_audio.src = "../../audio/sword.mp3";
+    this.start_audio.load();
+    this.start_audio.volume = 0.8;
+
+    this.streak_audio_3.src = "../../audio/Фотографирую закат.mp3";
+    this.streak_audio_3.load();
+    this.streak_audio_3.volume = 0.8;
 
     this.setToggleHotkeyBehavior();
-    // this.setToggleHotkeyText();
 
     this._fortniteGameEventsListener = new OWGamesEvents({
       onInfoUpdates: this.onInfoUpdates.bind(this),
@@ -51,11 +59,10 @@ class InGame extends AppWindow {
     if (! this.player_name){
       this.player_name = info.me.name
     }
-    // console.log(info.me.name)
     return 0
   }
 
-  // Special events will be highlighted in the event log
+  // EVENT
   private onNewEvents(e) {
     
     var event = e.events[0]
@@ -66,6 +73,9 @@ class InGame extends AppWindow {
     }
 
     switch(event.name){
+      case "matchStart":
+        this.playSound("start");
+
       case 'killer':
         log_event();
         this.last_killer = true;
@@ -87,9 +97,15 @@ class InGame extends AppWindow {
           this.playSound("suicide");
         }
         break;
+
+      case 'win':
+        this.playSound("win");
+        break;
+
       case 'matchEnd':
         this.streak_kills = 0;
         break;
+
       case 'killed':
       case 'knockout':
       // case 'kill':
@@ -97,19 +113,19 @@ class InGame extends AppWindow {
           var new_date = new Date();
           if (new_date <= this.streak_max_time){
             this.streak_kills ++;
-            this.create_date();
-            this.displayAnimation("killstreak");
+            this.create_date(1);
+            this.streakEvent();
           }else{
             this.streak_kills = 1;
-            this.create_date();
+            this.create_date(1);
           }
         }else{
           this.streak_kills ++;
-          this.create_date();
+          this.create_date(1);
         }
 
-        console.log(this.streak_kills);
-        // this.playSound("kill");
+        console.log("STREAK --> "+this.streak_kills);
+
         break;
 
     }
@@ -117,35 +133,62 @@ class InGame extends AppWindow {
       console.log(event)
     }
   }
-
-
+  // STREAK
+  private streakEvent(){
+    switch(this.streak_kills){
+      case 3:
+        this.playSound("killstreak_3")
+        this.displayAnimation("killstreak_3");
+    }
+  }
+  // PLAY
   private playSound(type) {
-    // var log = this._eventsLog
-
-    // const line = document.createElement('pre');
-    // line.textContent = JSON.stringify(data);
-
+    
     switch (type) {
-      case 'death':
-        // this.fall_audio.play();
+      case 'start':
+        this.start_audio.play();
         break;
-      case "kill":
-        this.kill_audio.play();
+
+      case "killstreak_3":
+        this.streak_audio_3.play();
         break;
+
       case "suicide":
         this.fall_audio.play();
         break;
     }
 
   }
-
+  // DISPLAY
   private displayAnimation(type){
-    console.log("KILLSTREAK"+this.streak_kills);
+
+    function show_element(element){
+      element.style.display = 'absolute';
+    }
+    function hide_element(element){
+      element.style.display = 'none';
+    }
+
+    function _delay(ms: number) {
+      return new Promise( resolve => setTimeout(resolve, ms) );
+    }
+    function wait(seconds){
+      (async () => { 
+        await _delay(seconds*1000);
+      })();
+    }
+
+    switch(type){
+      case "killstreak_3":
+        show_element(this.animation_1)
+        wait(10)
+        hide_element(this.animation_1)
+    }
   }
 
-  private create_date(){
+  private create_date(minutes){
     this.streak_max_time = new Date();
-    this.streak_max_time = this.streak_max_time.getTime()+(1 * 60000);
+    this.streak_max_time = this.streak_max_time.getTime()+(minutes * 60000);
   }
 
 
@@ -182,6 +225,12 @@ class InGame extends AppWindow {
 
 InGame.instance().run();
 
+
+
+// var log = this._eventsLog
+
+    // const line = document.createElement('pre');
+    // line.textContent = JSON.stringify(data);
     // log.appendChild(line);
     
     // clear_delay(10);

@@ -2,19 +2,31 @@
 *{
     margin: 0;
     padding: 0;
+    display: block;
 }
 
 body{
     background-color: transparent;
 }
 
-#eventsLog{
-    border: violet 1px dotted;
-    height: 208px;
+.animation{
+    display: absolute;
+    height: 100vh;
+    width: 100%;
+    display: none;
 }
 
-.highlight {
-    color: #00defa;
-    font-size: 40px;
-    text-align: center;
-  }
+#animation1{
+    background-color: rgba(0, 255, 255, 0.205);
+}
+#animation2{
+    background-color: rgba(207, 28, 183, 0.281);
+}
+
+#eventsPlace{
+    /* border: violet 1px dotted; */
+    /* background-color: aqua; */
+    /* height: 100vh;
+    width: 100%; */
+}
+

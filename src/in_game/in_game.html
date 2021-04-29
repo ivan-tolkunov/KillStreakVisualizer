@@ -2,36 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- <link rel="stylesheet" href="../../css/general.css" />
-  <link rel="stylesheet" href="../../css/header.css" />
-  <link rel="stylesheet" href="../../css/ingame.css" />
-  <link rel="stylesheet" href="../../css/modal.css" /> -->
   <link rel="stylesheet" href="../../css/new.css" />
-  <title>Overwolf Sample App - In-Game page</title>
 </head>
 <body class="in-game">
 
   <main>
-    <div id="logs">
-      <div id="events" class="logColumn">
-        <div id="eventsLog" class="dataText">
-        </div>
+    <div id="eventsPlace">
+      <div id="animation1" class="animation">
+      </div>
+      <div id="animation2" class="animation">
       </div>
     </div>
   </main>
 
 <script>
-
-  var display_area = document.getElementById("eventsLog");
-
-  function clear_logs(seconds){
-    setTimeout(clear(display_area), seconds*1000);
-    console.log("clear")
-  }
-
-  function clear(element){
-    element.innerHTML = "";
-  }
 
 </script>
 
