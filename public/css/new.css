@@ -10,17 +10,17 @@ body{
 }
 
 .animation{
-    display: absolute;
+    position: absolute;
     height: 100vh;
     width: 100%;
     display: none;
 }
 
 #animation1{
-    background-color: rgba(0, 255, 255, 0.205);
+    background-color: rgba(0, 255, 255, 0.5);
 }
 #animation2{
-    background-color: rgba(207, 28, 183, 0.281);
+    background-color: rgba(207, 28, 183, 0.514);
 }
 
 #eventsPlace{

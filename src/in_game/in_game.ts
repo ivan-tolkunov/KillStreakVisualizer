@@ -18,6 +18,8 @@ class InGame extends AppWindow {
   private fall_audio = new Audio();
   private start_audio = new Audio();
   private streak_audio_3 = new Audio();
+  private streak_audio_2 = new Audio();
+  private won_audio = new Audio();
 
   private last_killer = false;
 
@@ -42,9 +44,17 @@ class InGame extends AppWindow {
     this.start_audio.load();
     this.start_audio.volume = 0.8;
 
-    this.streak_audio_3.src = "../../audio/Фотографирую закат.mp3";
+    this.streak_audio_2.src = "../../audio/povezlo-povezlo.wav";
+    this.streak_audio_2.load();
+    this.streak_audio_2.volume = 0.5;
+
+    this.streak_audio_3.src = "../../audio/Фотографирую закат.wav";
     this.streak_audio_3.load();
-    this.streak_audio_3.volume = 0.8;
+    this.streak_audio_3.volume = 0.3;
+
+    this.won_audio.src = "../../audio/Фотографирую закат.wav";
+    this.won_audio.load();
+    this.won_audio.volume = 0.5;
 
     this.setToggleHotkeyBehavior();
 
@@ -98,17 +108,17 @@ class InGame extends AppWindow {
         }
         break;
 
-      case 'win':
-        this.playSound("win");
+      case 'won':
+        this.playSound("won");
         break;
 
       case 'matchEnd':
         this.streak_kills = 0;
         break;
 
-      case 'killed':
+      // case 'killed':
       case 'knockout':
-      // case 'kill':
+      case 'kill':
         if (this.streak_kills > 0){
           var new_date = new Date();
           if (new_date <= this.streak_max_time){
@@ -135,10 +145,17 @@ class InGame extends AppWindow {
   }
   // STREAK
   private streakEvent(){
-    switch(this.streak_kills){
-      case 3:
-        this.playSound("killstreak_3")
-        this.displayAnimation("killstreak_3");
+    // switch(this.streak_kills){
+    //   case 3:
+    //     this.playSound("killstreak_3")
+    //     this.displayAnimation("killstreak_3");
+    // }
+    if(this.streak_kills == 2){
+      this.playSound("killstreak_2")
+    }
+    if(this.streak_kills >= 3){
+      this.playSound("killstreak_3")
+      // this.displayAnimation("killstreak_3");
     }
   }
   // PLAY
@@ -149,6 +166,10 @@ class InGame extends AppWindow {
         this.start_audio.play();
         break;
 
+      case "killstreak_2":
+        this.streak_audio_2.play();
+        break;
+  
       case "killstreak_3":
         this.streak_audio_3.play();
         break;
@@ -156,14 +177,21 @@ class InGame extends AppWindow {
       case "suicide":
         this.fall_audio.play();
         break;
+
+      case "won":
+        this.won_audio.play();
+        break;
     }
 
   }
   // DISPLAY
   private displayAnimation(type){
 
+    var animation_1 = this.animation_1
+    var animation_2 = this.animation_2
+
     function show_element(element){
-      element.style.display = 'absolute';
+      element.style.display = 'block';
     }
     function hide_element(element){
       element.style.display = 'none';
@@ -172,17 +200,21 @@ class InGame extends AppWindow {
     function _delay(ms: number) {
       return new Promise( resolve => setTimeout(resolve, ms) );
     }
-    function wait(seconds){
-      (async () => { 
+    function show(seconds, animation){
+      (async () => {
+        console.log("show_start")
+        show_element(animation)
+        console.log(animation)
         await _delay(seconds*1000);
+        console.log("show_end")
+        hide_element(animation)
       })();
     }
 
     switch(type){
       case "killstreak_3":
-        show_element(this.animation_1)
-        wait(10)
-        hide_element(this.animation_1)
+        show(10, animation_1)
+
     }
   }
 
